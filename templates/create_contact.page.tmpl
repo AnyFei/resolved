@@ -1,0 +1,82 @@
+{{template "base" .}}
+
+{{define "content"}}
+
+<div class="container-md" id="vueRoot">
+
+  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+  <br><br><br>
+
+  <div class="form-floating mb-3">
+    <input type="text" class="form-control" id="contactName" v-model="contactName" name="contactName" placeholder="Contact Name">
+    <label for="contactName">Contact Name</label>
+  </div>
+  <div class="form-floating mb-3">
+    <input type="text" class="form-control" id="email" v-model="email" name="email" placeholder="Email">
+    <label for="email">Email</label>
+  </div>
+  <div class="form-floating mb-3">
+    <input type="text" class="form-control" id="phone" v-model="phone" name="phone" placeholder="Phone">
+    <label for="phone">Phone</label>
+  </div>
+  <div class="form-floating mb-3">
+    <input type="text" class="form-control" id="customer" v-model="customer" name="customer" placeholder="Customer">
+    <label for="Customer">Customer</label>
+  </div>
+  <input type="text" list="customers" />
+  <datalist id="customers">
+  </datalist>
+    <div class="d-grid gap-2">
+      <button onclick=newContact() class="btn btn-primary" value="Create">Create</button>
+    </div>
+
+
+
+
+</div>
+
+<script>
+function newContact(){
+      const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: document.getElementById("contactName").value,
+                          email: document.getElementById("email").value,
+                          phone: document.getElementById("phone").value,
+                          customer_id: document.getElementById("customer").value,
+                          isActive: true}),
+    redirect: 'follow'
+  };
+  fetch("/createContact", requestOptions)
+        .then(res => res.json()) // expecting a json response
+        .then(json => {
+           console.log(json)
+           window.location.href = "/contacts/"+json.Id;
+          });
+        }
+
+$( document ).ready(function() {
+  const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    redirect: 'follow'
+  };
+  fetch("/customers", requestOptions)
+        .then(res => res.json()) // expecting a json response
+        .then(json => {
+           console.log(json)
+           var options = '';
+
+           for (var i=0; i<json.length; i++){
+            options += '<option value="' + json[i].ID + '" >'+json[i].Name+'</option>';
+
+           }
+           document.getElementById('customers').innerHTML = options;
+
+          });
+        
+});
+
+
+</script>
+{{end}}

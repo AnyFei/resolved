@@ -1,0 +1,229 @@
+{{ define "header" }}
+    <!doctype html>
+    <html lang="en">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>TeamSupport Enhancement Tool</title>
+
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.1.2/dist/css/datepicker-bs4.min.css">
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.css">
+            <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+            <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script> -->
+            <script src="/assets/dist/trumbowyg.min.js"></script>
+            <link rel="stylesheet" href="/assets/dist/ui/trumbowyg.min.css">
+        <style>
+            .btn-outline-secondary {
+                color: aqua;
+                border-color: #6c757d;
+            }
+
+
+            .paraClass {
+                font-size: 3em;
+            }
+
+            .secondClass {
+                color: red;
+            }
+
+            #lastPara {
+                text-decoration: underline;
+            }
+            .editElemet{
+                border: 1px solid #4287f5;
+                box-shadow: 0 0 2px #4287f5;
+            }
+            .editElementActive{
+                border-left: 5px solid #4EBBFF;
+                border-top-left-radius: 10px;
+                background-color: #cbe6f2;
+
+            }
+              /* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%; /* Could be more or less, depending on screen size */
+}
+.collapse.show {
+  visibility: visible;
+}
+        </style>
+<script>
+//{{if .userPermissions.Logged}}
+  document.addEventListener("DOMContentLoaded", function(event) { 
+    const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    };
+    fetch("/refresh_token", requestOptions)
+    .then(function(){ // expecting a json response
+      console.log("token refreshed")
+    });
+  
+});
+//{{end}}
+/* jshint ignore:end */
+
+$('.collapse').collapse();
+function makeEditable(){
+  $("#saveChangesBtn").toggle();
+  $(".editable").each(function() {
+    console.log($(this).attr("contenteditable"))
+  
+      if($(this).attr("contenteditable") != "true"){
+        $(this).attr("contenteditable", "true");
+        $("#editItemBtn").html("Cancel");
+        $(this).toggleClass( "editElementActive" );
+        $(this).on('DOMSubtreeModified', $(this), function() {
+          key = $(this).attr('id');
+          value = $(this).html();
+          updatedValues[key] = value;
+      });
+      }
+     else{
+        $("#editItemBtn").html("Edit");
+        $(this).attr("contenteditable", "false");
+        $(this).toggleClass( "editElementActive" );
+
+
+    }
+    });
+}
+function deleteItem(itemId, itemType){
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ID: itemId, type: itemType}),
+  };
+  fetch("/delete", requestOptions)
+  .then(function(){ // expecting a json response
+  window.location.href = "/"+itemType.toLowerCase()+"s/";
+}  );
+        }
+
+
+function saveChanges(objectType){
+  makeEditable();
+  customerId = $("#customerName").data("customer");
+  updatedValues["type"] = "Customer"
+  updatedValues["id"] = $("#objectId").html();
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatedValues),
+  };
+  fetch("/update", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+           console.log(json)
+          });
+        }
+
+
+    function showRemoveModal(){
+    // Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var cancelBtn = document.getElementById("cancelRemove");
+
+// When the user clicks on the button, open the modal
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+  cancelBtn.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+}
+
+    </script>
+    </head>
+
+    <body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/products">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contacts">Contacts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/customers">Customers</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/tickets">Tickets</a>
+              </li>
+                {{if .userPermissions.Logged}}
+              <li class="nav-item" id="logout">
+                <a class="nav-link" href="/logout">Logout</a>
+            </li>
+               {{else}} 
+            <li class="nav-item" id="login">
+              <a class="nav-link" href="/login">Login</a>
+          </li>
+             {{end}}
+
+            </ul>
+        </div>
+        {{if .userPermissions.CanCreateContacts}}
+        <a class="nav-link" href="/tickets/new"><button class="btn btn-outline-warning btn-sm" id="newTicketBtn">New Ticket</button></a>
+        {{end}}
+    </nav>
+
+{{end}}

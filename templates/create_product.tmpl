@@ -1,0 +1,57 @@
+{{template "header" .}}
+
+
+<div class="container-md" id="vueRoot">
+
+  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+  <br><br><br>
+
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="productName" v-model="productName" name="productName" placeholder="Product Name">
+      <label for="customerName">Product Name</label>
+    </div>
+    
+    <div class="d-grid gap-2">
+      <button onclick=newProduct() class="btn btn-primary" value="Create">Create</button>
+    </div>
+
+
+
+
+</div>
+
+<script>
+// vm = new Vue({
+//   el : "#vueRoot",
+//   data : {},
+//   methods : {
+//     submit : function(){
+//       const requestOptions = {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({ name: vm.customerName })
+//   };
+//   fetch("/createCustomer", requestOptions)
+//     .then(response => response.json())
+//     .then(data => (this.postId = data.id))
+//     .then(console.log(data))
+//     }
+//   }
+// });
+function newProduct(){
+      const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name:document.getElementById("productName").value, type:"Product"}),
+    redirect: 'follow'
+  };
+  fetch("/new", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+           console.log(json)
+           window.location.href = "/products/"+json.Id;
+          });
+        }
+</script>
+
+{{template "footer" .}}

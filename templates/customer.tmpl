@@ -1,0 +1,63 @@
+{{template "header" .}}
+
+<div class="container">
+  <div class="row">
+    {{if eq .userPermissions.CanCreateContacts "true"}}
+    <br>
+      <div class="margin-md">
+        <br>
+        <button type="button" onclick="makeEditable()" id="editItemBtn" class="btn btn-primary">Edit</button> 
+        <button type="button" onclick="saveChanges('Customer')" style="display: none;" id="saveChangesBtn" class="btn btn-primary">Save</button>
+        <button id="myBtn" class="btn btn-danger" onclick="showRemoveModal()">Remove</button>
+        <br>
+    
+     </div>
+     <br>
+     {{end}}
+      <div class="col">
+         <h1 class="editable" id="name">{{.customer_name}}</h1>
+         <p>Date Created: {{.created_at}}</p>
+         <p>ID: <span id="objectId">{{.customer_id}}</span></p>
+      </div>
+      <div id="customersContacts" ><button class="btn btn-primary" onclick="customersContacts()">Contacts</button><br><br></div>
+      <div style="display: none;" id="customerContactsContent"><div class="list-group margin-md"> </div></div>
+  </div>
+
+</div>
+  <div id="myModal" class="modal margin-md">
+
+    <!-- Modal content -->
+    <div class="modal-content margin-md">
+      <p>Are you sure that you want to remove this contact?></p>
+      <button type="button" onclick="deleteItem('{{.customer_id}}', 'Customer')" class="btn btn-danger btn-sm">Remove</button>
+      <button type="button" id="cancelRemove" class="btn btn-primary btn-sm">Cancel</button> 
+
+    </div>
+
+  </div>
+
+
+  <script>
+    const updatedValues = new Map();
+   function customersContacts(){
+    $( "#customerContactsContent" ).empty();
+
+    $( "#customerContactsContent" ).toggle();
+    const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  };
+  fetch("/customers/{{.customer_id}}/contacts", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+          console.log(json.contacts);
+          for (const [key, value] of Object.entries(json.contacts)) {
+            $( "#customerContactsContent" ).append( '<a href="/contacts/'+key+'" class="list-group-item list-group-item-action">['+key+'] '+value+'</a>' );
+          }
+          });
+        }
+
+
+    
+  </script>
+    {{template "footer" .}}

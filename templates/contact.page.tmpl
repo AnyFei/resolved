@@ -1,0 +1,14 @@
+{{template "base" .}}
+
+{{define "content"}}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+               <h1>{{index .StringMap "name"}}</h1>
+               <p>Date Created: {{index .StringMap "date_created"}}</p>
+               <p>ID: {{index .StringMap "contact_id"}}</p>
+               <p>Customer: {{index .StringMap "customer_name"}}</p>
+            </div>
+        </div>
+    </div>
+{{end}}

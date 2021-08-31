@@ -1,0 +1,117 @@
+{{template "header" .}}
+
+
+<div class="container-md" id="vueRoot">
+
+  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+  <br><br><br>
+
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="contactName" v-model="contactName" name="contactName" placeholder="Contact Name">
+      <label for="contactName">Contact Name</label>
+    </div>
+    <div class="form-floating mb-3">
+      <div class="dropdown">
+        <div id="myDropdown" class="dropdown-content">
+          <input type="text" class="form-control" id="customerName" v-model="customerName" name="customerName" data-customer="" placeholder="Customer Name" onkeyup="filterFunction()">
+          <div id="pickListOptions" class="list-group" style="display: none;">
+        </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="d-grid gap-2">
+      <button onclick=newContact() class="btn btn-primary" value="Create">Create</button>
+    </div>
+
+
+
+
+</div>
+
+<script>
+function filterFunction() {
+  var input, filter, ul, li, a, i;
+  input = document.getElementById("customerName");
+  filter = input.value.toUpperCase();
+
+  if(filter.length>2){
+    $("#pickListOptions").css("display", "block")
+  div = document.getElementById("pickListOptions");
+  a = div.getElementsByTagName("a");
+  for (i = 0; i < a.length; i++) {
+    txtValue = a[i].textContent || a[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
+  }
+  }
+  else{
+    $("#pickListOptions").css("display", "none")
+
+  }
+}
+function newCustomer(){
+      const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name:document.getElementById("contactName").value, type:"Contact"}),
+    redirect: 'follow'
+  };
+  fetch("/new", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+           console.log(json)
+           window.location.href = "/contacts/"+json.Id;
+          });
+        }
+
+
+function getCustomersPickList(){
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name:document.getElementById("contactName").value, type:"Contact"}),
+    redirect: 'follow'
+  };
+  fetch("/allCustomers", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+          console.log(json.customers);
+          for (const [key, value] of Object.entries(json.customers)) {
+            $("#pickListOptions").append('<a href="#" class="list-group-item list-group-item-action" id='+key+' onClick="customerSelected('+key+')">['+key+'] - '+value+'</div>');
+          }
+           
+          });
+        }
+        window.onload = function() {
+          getCustomersPickList();
+};
+function customerSelected(customerId){
+  console.log($("#"+customerId).html());
+  $("#customerName").val($("#"+customerId).html());
+  $("#customerName").data("customer", customerId);
+  $("#pickListOptions").css("display", "none");
+
+}
+
+function newContact(){
+  customerId = $("#customerName").data("customer");
+  console.log(customerId)
+      const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name:document.getElementById("contactName").value, id: ""+customerId, type:"Contact"}),
+  };
+  fetch("/new", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+           console.log(json)
+           window.location.href = "/contacts/"+json.Id;
+          });
+        }
+</script>
+
+{{template "footer" .}}

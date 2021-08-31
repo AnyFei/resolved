@@ -1,0 +1,24 @@
+{{template "header" .}}
+
+    <div class="container">
+    {{if eq .userPermissions.CanCreateContacts "true"}}
+    <br>
+      <div class="margin-md">
+         <a href="contacts/new"><button type="button" class="btn btn-primary">New Contact</button></a>
+     </div>
+     <br>
+
+     {{end}}
+     
+      <div class="list-group margin-md">
+        {{range $key, $value := .contacts}}
+             <a href="/contacts/{{$key}}" class="list-group-item list-group-item-action">[{{$key}}] {{$value}}</a>
+        {{end}}
+    </div>
+
+
+
+
+ </div>
+
+    {{template "footer" .}}

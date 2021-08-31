@@ -1,0 +1,213 @@
+{{template "header" .}}
+
+
+<div class="container-md">
+
+  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+  <br><br><br>
+
+    <div class="form-outline mb-3">
+      <input type="text" class="form-control" id="ticketTitle"name="ticketTitle" placeholder="Title">
+    </div>
+    <div class="form-outline mb-3">
+      <div id="trumbowyg-demo"></div>    
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <div id="customerDropdown" class="dropdown-content">
+          <input type="text" class="form-control" id="customerName" name="customerName" data-customer="" placeholder="Customer Name" onfocus="getCustomersPickList()" onkeyup="filterObjects('customer')">
+          <div id="customerPickListOptions" class="list-group" style="display: none;"></div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div id="contactDropdown" class="dropdown-content">
+          <input type="text" class="form-control" id="contactName" name="contactName" data-contact="" placeholder="Contact Name" onfocus="getContactsPickList()" onkeyup="filterObjects('contact')">
+          <div id="contactPickListOptions" class="list-group" style="display: none;"></div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div id="productDropdown" class="dropdown-content">
+          <input type="text" class="form-control" id="productName" name="productName" data-product="" placeholder="Product Name" onfocus="getProductsPickList()" onkeyup="filterObjects('product')">
+          <div id="productPickListOptions" class="list-group" style="display: none;"></div>
+        </div>
+      </div>
+</div>
+    <div class="d-grid gap-2">
+      <button onclick=newTicket() class="btn btn-primary" value="Create">Create</button>
+    </div>
+
+
+
+</div>
+<button onclick=previewWy() class="btn btn-primary" value="Preview">Preview</button>
+
+
+<script>
+
+$('#trumbowyg-demo').trumbowyg();
+function previewWy(){
+  
+  console.log($('#trumbowyg-demo').trumbowyg().html())
+}      
+
+  var usersDownloaded = false;
+  var customersDownloaded = false;
+  var contactsDownloaded = false;
+  var productsDownloaded = false;
+function filterObjects(objectType) {
+  var input, filter, ul, li, a, i;
+  input = document.getElementById(objectType+"Name");
+  filter = input.value.toUpperCase();
+
+  if(filter.length>2){
+    $("#"+objectType+"PickListOptions").css("display", "block")
+  div = document.getElementById(objectType+"PickListOptions");
+  a = div.getElementsByTagName("a");
+  for (i = 0; i < a.length; i++) {
+    txtValue = a[i].textContent || a[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
+  }
+  }
+  else{
+    $("#customerPickListOptions").css("display", "none")
+
+  }
+}
+function newCustomer(){
+      const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name:document.getElementById("contactName").value, type:"Contact"}),
+    redirect: 'follow'
+  };
+  fetch("/new", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+           console.log(json)
+           window.location.href = "/contacts/"+json.Id;
+          });
+        }
+
+
+function getContactsPickList(){
+  if(!contactsDownloaded){
+  const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  };
+  fetch("/all/contacts", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+          console.log(json.contacts);
+          for (const [key, value] of Object.entries(json.contacts)) {
+            $("#contactPickListOptions").append('<a href="#" class="list-group-item list-group-item-action" id=contact-'+key+'>['+key+'] - '+value+'</div>');
+              document.getElementById("contact-"+key).addEventListener ("click", function(){
+                  objectSelected("contact", key);
+              }, false);
+          }
+           contactsDownloaded = true;
+          });
+        }
+      }
+
+function getCustomersPickList(){
+  if(!customersDownloaded){
+  const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  };
+  fetch("/all/customers", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+          console.log(json.customers);
+          for (const [key, value] of Object.entries(json.customers)) {
+            $("#customerPickListOptions").append('<a href="#" class="list-group-item list-group-item-action" id=customer-'+key+'>['+key+'] - '+value+'</div>');
+              document.getElementById("customer-"+key).addEventListener ("click", function(){
+                  objectSelected("customer", key);
+              }, false);
+          }
+           customersDownloaded = true;
+          });
+        }
+      }
+function getProductsPickList(){
+  if(!productsDownloaded){
+  const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+
+  };
+  fetch("/all/products", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+          console.log(json.products);
+          for (const [key, value] of Object.entries(json.products)) {
+            $("#productPickListOptions").append('<a href="#" class="list-group-item list-group-item-action" id=product-'+key+'>['+key+'] - '+value+'</div>');
+              document.getElementById("product-"+key).addEventListener ("click", function(){
+                  objectSelected("product", key);
+              }, false);
+          }
+           productsDownloaded = true;
+          });
+        }
+      }
+function getUsersPickList(){
+  if(!usersDownloaded){
+  const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  };
+  fetch("/all/users", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+          console.log(json.users);
+          for (const [key, value] of Object.entries(json.customers)) {
+            $("#userPickListOptions").append('<a href="#" class="list-group-item list-group-item-action" id=user-'+key+'>['+key+'] - '+value+'</div>');
+              document.getElementById("user-"+key).addEventListener ("click", function(){
+                  objectSelected("user", key);
+              }, false);
+          }
+           usersDownloaded = true;
+          });
+        }
+      }
+function objectSelected(objectType, objectId){
+  console.log($("#"+objectType+"-"+objectId).html());
+  $("#"+objectType+"Name").val($("#"+objectType+"-"+objectId).html());
+  $("#"+objectType+"Name").data(objectType, objectId);
+  $("#"+objectType+"PickListOptions").css("display", "none");
+
+}
+
+
+function newTicket(){
+  customerId = $("#customerName").data("customer");
+  productId = $("#productName").data("product");
+  contactId = $("#contactName").data("contact");
+  title = $("#ticketTitle").val();
+  description = $('#trumbowyg-demo').trumbowyg().html();
+  console.log(customerId)
+      const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: title.toString(), description: description.toString(), 
+                            product: productId.toString(), customer: customerId.toString(), contact: contactId.toString(),
+      type:"Ticket"}),
+  };
+  fetch("/new", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+           console.log(json)
+           window.location.href = "/tickets/"+json.Id;
+          });
+        }
+</script>
+
+{{template "footer" .}}

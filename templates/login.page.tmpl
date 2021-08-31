@@ -1,0 +1,58 @@
+{{template "header" .}}
+
+<div class="container-md" id="vueRoot">
+
+  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+  <br><br><br>
+<form id="loginForm">
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="username" v-model="username" name="username" placeholder="Username">
+      <label for="username">Username</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input type="password" class="form-control" id="password" v-model="password" name="password" placeholder="Password">
+      <label for="password">Password</label>
+    </div>
+    
+    <div class="d-grid gap-2">
+      <button class="btn btn-primary" type="submit" value="Sign in">Sign in</button>
+    </div>
+    <div id="wrongCredentials" style="display: none; margin: 10px; background-color: #F87C7C; padding: 5px; text-align: center; font-size: medium; color: #380001; border: 1px solid #380001; border-radius: 10px;">We couldn't sign you in! Make sure that your credentials are correct and that your account is active.</div>
+  </form>
+
+</div>
+
+<script>
+  function logSubmit(event) {
+    const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name:document.getElementById("username").value,
+                            password: document.getElementById("password").value}),
+    redirect: 'follow'
+  };
+  fetch("/login", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+          console.log(json)
+          if(json.Status == "ok"){
+          console.log(json.prevPath);
+          if(!json.prevPath)
+          window.location.href = "/";
+          else{
+            window.location.href = json.prevPath;
+
+          }
+        }
+          }).catch(function(error)
+          {
+            $("#wrongCredentials").css("display", "block");
+          });
+  event.preventDefault();
+}
+
+const form = document.getElementById('loginForm');
+form.addEventListener('submit', logSubmit);
+</script>
+
+{{template "footer" .}}
