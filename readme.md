@@ -21,6 +21,7 @@ App will be dockerized. Ideally I want to include multiple microservices (email 
 
 
 ## To Do:
+* Move secrets (passwords, JWT secret) to ENV variables
 * Change frontend to React/Vue/Angular (still deciding)
 * Dockerize the app
 * Remove unused parts of the code
