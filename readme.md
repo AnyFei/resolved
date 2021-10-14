@@ -2,7 +2,11 @@
 
 This is the repository for my first Go project.
 
-It's my playground for learning Go.
+It's my playground for learning Go. I decided to build a B2B ticketing system as I am working with similar tool in my job. The goal is to have a fully functional application where customers can create ticket both via Email and client-dedicated website (Client Portal). Internal users can also update/create tickets both via Email or internal app. 
+
+I am using PostgreSQL as my database, JQuery and clean JS for the frontend, but the goal is to change it to React/Vue/Angular, but I am still deciding which framework I want to learn. 
+
+App will be dockerized. Ideally I want to include multiple microservices (email processor, automations, SLAs).
 
 
 ## Current functionalities of the app:
