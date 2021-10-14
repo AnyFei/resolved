@@ -1,0 +1,39 @@
+{{template "header_new" .}}
+
+<div class="container">
+  <div class="row">
+    {{if eq .userPermissions.CanCreateContacts "true"}}
+    <br>
+      <div class="margin-md">
+        <br>
+        <button type="button" onclick="makeEditable()" id="editItemBtn" class="btn btn-primary">Edit</button> 
+        <button type="button" onclick="saveChanges('Product')" style="display: none;" id="saveChangesBtn" class="btn btn-primary">Save</button>
+        <button id="myBtn" class="btn btn-danger" onclick="showRemoveModal()">Remove</button>
+        <br>
+    
+     </div>
+     <br>
+     {{end}}
+      <div class="col">
+         <h1 class="editable" id="name">{{.group_name}}</h1>
+         <p>Date Created: {{.created_at}}</p>
+         <p>ID: <span id="objectId">{{.group_id}}</span></p>
+      </div>
+  </div>
+</div>
+<div id="myModal" class="modal margin-md">
+
+  <!-- Modal content -->
+  <div class="modal-content margin-md">
+    <p>Are you sure that you want to remove this group?></p>
+    <button type="button" onclick="deleteItem('{{.group_id}}', 'Group')" class="btn btn-danger btn-sm">Remove</button>
+    <button type="button" id="cancelRemove" class="btn btn-primary btn-sm">Cancel</button> 
+
+  </div>
+
+</div>
+<script>
+  const updatedValues = new Map();
+
+</script>
+    {{template "footer_new" .}}

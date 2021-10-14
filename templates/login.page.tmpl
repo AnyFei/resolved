@@ -1,4 +1,4 @@
-{{template "header" .}}
+{{template "header_new" .}}
 
 <div class="container-md" id="vueRoot">
 
@@ -6,12 +6,10 @@
   <br><br><br>
 <form id="loginForm">
     <div class="form-floating mb-3">
-      <input type="text" class="form-control" id="username" v-model="username" name="username" placeholder="Username">
-      <label for="username">Username</label>
+      <input type="text" class="form-control" id="username" name="username" placeholder="Username">
     </div>
     <div class="form-floating mb-3">
-      <input type="password" class="form-control" id="password" v-model="password" name="password" placeholder="Password">
-      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" name="password" placeholder="Password">
     </div>
     
     <div class="d-grid gap-2">
@@ -55,4 +53,4 @@ const form = document.getElementById('loginForm');
 form.addEventListener('submit', logSubmit);
 </script>
 
-{{template "footer" .}}
+{{template "footer_new" .}}

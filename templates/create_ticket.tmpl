@@ -1,4 +1,4 @@
-{{template "header" .}}
+{{template "header_new" .}}
 
 
 <div class="container-md">
@@ -42,16 +42,12 @@
 
 
 </div>
-<button onclick=previewWy() class="btn btn-primary" value="Preview">Preview</button>
 
 
 <script>
-
-$('#trumbowyg-demo').trumbowyg();
-function previewWy(){
-  
-  console.log($('#trumbowyg-demo').trumbowyg().html())
-}      
+document.addEventListener("DOMContentLoaded", function(event) { 
+  $('#trumbowyg-demo').trumbowyg();
+});
 
   var usersDownloaded = false;
   var customersDownloaded = false;
@@ -210,4 +206,4 @@ function newTicket(){
         }
 </script>
 
-{{template "footer" .}}
+{{template "footer_new" .}}

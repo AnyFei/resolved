@@ -1,0 +1,269 @@
+{{template "header_new" .}}
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+  <!-- Sidebar - Brand -->
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+      <div class="sidebar-brand-icon rotate-n-15">
+          <i class="fab fa-resolving"></i>
+      </div>
+      <div class="sidebar-brand-text mx-3">RESOLVED</div>
+  </a>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0">
+
+  <!-- Nav Item - Dashboard -->
+  <li class="nav-item">
+      <a class="nav-link" href="/">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Home</span></a>
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider">
+
+  <!-- Heading -->
+  <div class="sidebar-heading">
+      Items
+  </div>
+
+  <!-- Nav Item - Pages Collapse Menu -->
+  <li class="nav-item">
+      <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+          aria-expanded="true" aria-controls="collapseTwo">
+          <i class="fas fa-plus-circle"></i>
+          <span>Create</span>
+      </a>
+  </li>
+
+
+  <li class="nav-item">
+      <a class="nav-link" href="/customers">
+          <i class="far fa-building"></i>
+          <span>Customers</span></a>
+  </li>
+
+  <li class="nav-item">
+      <a class="nav-link" href="/contacts">
+          <i class="fas fa-user-friends"></i>
+          <span>Contacts</span></a>
+  </li>
+
+  <li class="nav-item">
+      <a class="nav-link" href="/products">
+          <i class="fab fa-product-hunt"></i>
+          <span>Products</span></a>
+  </li>
+
+  <li class="nav-item">
+      <a class="nav-link" href="/users">
+          <i class="fas fa-fw fa-users-cog"></i>
+          <span>Users</span></a>
+  </li>
+
+  <li class="nav-item">
+      <a class="nav-link" href="/tickets">
+          <i class="fas fa-ticket-alt"></i>
+      <span>Tickets</span></a>
+  </li>
+  <hr class="sidebar-divider d-none d-md-block">
+  <div class="sidebar-heading">
+      Properties
+  </div>
+  <li class="nav-item">
+      <a class="nav-link" href="/groups">
+          <i class="fas fa-ticket-alt"></i>
+      <span>Groups</span></a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link" href="/admin">
+          <i class="fas fa-ticket-alt"></i>
+      <span>Admin</span></a>
+  </li>
+  <!-- Divider -->
+  <hr class="sidebar-divider d-none d-md-block">
+
+  <!-- Sidebar Toggler (Sidebar) -->
+  <div class="text-center d-none d-md-inline">
+      <button class="rounded-circle border-0" id="sidebarToggle"></button>
+  </div>
+
+</ul>
+<div class="content-section">
+  <div id="ticket-details" class="row">
+
+  <!-- TICKET NUMBER -->
+  <div class="col-xl-3">
+    <div class="card border-left-primary shadow h-75 detail-item">
+      <div class="card-body">
+                <div class="text-xs font-weight-bold text-primary text-uppercase">Ticket Number</div>
+                <div class="font-weight-bold text-gray-800">#{{.ticket_id}}</div>
+    </div>
+  </div> 
+  </div>
+  <!-- END OF TICKET NUMBER -->
+
+  <!-- CUSTOMERS -->
+  <div class="col-xl-3">
+    <div class="card border-left-primary shadow h-75 detail-item">
+      <div class="card-body">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase">Customer</div>
+                  <a href="/customers/{{.customer_id}}"> <div class="font-weight-bold text-gray-800">{{.customer_name}}</div></a>
+      </div>
+    </div>
+  </div>
+  <!-- END OF CUSTOMERS -->
+
+    <!-- CONTACTS -->
+    <div class="col-xl-3">
+      <div class="card border-left-primary shadow h-75 detail-item">
+        <div class="card-body">
+                <div class="text-xs font-weight-bold text-primary text-uppercase">Contact</div>
+                <a href="/contacts/{{.contact_id}}"> <div class="font-weight-bold text-gray-800">{{.contact_name}}</div></a>
+    </div>
+  </div>
+  </div>
+  <!-- END OF CONTACTS -->
+
+  <!-- PRODUCTS -->
+  <div class="col-xl-3">
+    <div class="card border-left-primary shadow h-75 detail-item">
+      <div class="card-body">
+                <div class="text-xs font-weight-bold text-primary text-uppercase">Product</div>
+                <a href="/products/{{.product_id}}"> <div class="font-weight-bold text-gray-800">{{.product_name}}</div></a>
+    </div>
+  </div> 
+  </div>
+  <!-- END OF PRODUCTS -->
+
+</div>
+<h1 class="editable" id="name">{{.name}}</h1>
+<div id="add-action-button" class="mb-3">
+  <div class="row">
+    <div class="col">
+      <div id="add-public-response">
+        <button class="btn btn-response" type="button">Add response</button>
+      </div>
+    </div>
+    <div class="col">
+      <div id="add-note">
+        <button class="btn btn-note" type="button">Add note</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="add-action-editor">
+  <div class="form-outline mb-3">
+    <div id="trumbowyg-add-action"></div>    
+  </div>
+  <div id="save-cancel-btns" class="row">
+    <div class="col mr-2"><div id="save-action-btn"><button class="btn btn-note" type="button">SAVE</button></div> </div>
+    <div class="col mr-2"><div id="cancel-action-btn"><button class="btn btn-note" type="button">CANCEL</button></div></div>
+
+  </div>
+</div>
+
+<div id="ticket-actions">
+
+          {{range .Actions}}
+          <div class="card mb-2">
+            <div class="card-header action-type-{{.Action_type}}">Action added by <a style="color: white;" href="/users/{{.Created_by}}">{{.Created_by_name}}</a> on <div class="action-created-on">{{.Date_created}}</div></div>
+            <div class="card-body">{{.Action_text}}</div>
+        </div>
+
+          {{end}}
+
+              <div class="card">
+                <div class="card-header">Description</div>
+                <div class="card-body">{{.description}}</div>
+            </div>
+         
+</div>
+
+</div>
+
+
+<div class="col">
+  <div id="cf-name" class="dropdown-content">
+    <input type="text" class="form-control" id="custom-value-name" name="custom-value-name" placeholder="Custom Value Name">
+  </div>
+</div>
+
+<div class="col">
+  <div id="cf-value" class="dropdown-content">
+    <input type="text" class="form-control" id="custom-value" name="custom-value-name" placeholder="Value">
+  </div>
+</div>
+
+<button class="btn-primary" onclick=addCF()>Add value</button>
+
+
+
+  <script>
+
+function addCF(){
+  cf_name = $("#custom-value-name").html();
+cf_value = $("#custom-value").html();
+const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({"TestValue": cf_value}),
+  };
+  console.log(requestOptions.body);
+  fetch("/admin/add-custom-field", requestOptions)
+  .then();
+        
+}
+
+
+    let actionType = 0;
+document.addEventListener("DOMContentLoaded", function(event) { 
+
+ $(".action-created-on").replaceWith(function(){
+    var d = new Date($(this).html());
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"];
+    return monthNames[d.getMonth()] + " "+d.getDay() + ", " + d.getFullYear() +" at " + d.getHours() +":" + d.getMinutes();
+})
+  document.getElementById("add-public-response").addEventListener ("click", function(){
+      $('#trumbowyg-add-action').trumbowyg();
+      $('#add-action-editor').toggle();
+      actionType = 1;
+
+    });
+    document.getElementById("add-note").addEventListener ("click", function(){
+      $('#trumbowyg-add-action').trumbowyg();
+      $('#add-action-editor').toggle();
+      actionType = 0;
+
+    });
+    document.getElementById("save-action-btn").addEventListener ("click", function(){
+      addAction()
+    });
+  
+});
+
+function addAction(){
+
+  description = $('#trumbowyg-add-action').trumbowyg().html();
+  ticket_id = "{{.ticket_id}}";
+      const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ticket_id: ticket_id.toString(), description: description.toString(), 
+                           action_type: actionType.toString()}),
+  };
+  console.log(requestOptions.body);
+  fetch("/add_action", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+           $("#ticket-actions").prepend('<div class="card mb-2"> <div class="card-header action-type-'+actionType+'">Action added by {{.userPermissions.Name}} just now</div><div class="card-body">'+description+'</div></div>')
+           $('#trumbowyg-add-action').trumbowyg('empty');
+  $('#add-action-editor').toggle();
+          });
+        }
+
+  </script>
+    {{template "footer_new" .}}

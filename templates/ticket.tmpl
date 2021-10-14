@@ -1,36 +1,303 @@
-{{template "header" .}}
+{{template "header_new" .}}
 
-<div class="container">
+<div class="container-fluid">
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <h1 class="h3 mb-0 text-gray-800">{{.Ticket.Name}}</h1>
+  </div>
+
   <div class="row">
-    {{if eq .userPermissions.CanCreateContacts "true"}}
-    <br>
-      <div class="margin-md">
-        <br>
-        <button type="button" onclick="makeEditable()" id="editItemBtn" class="btn btn-primary">Edit</button> 
-        <button type="button" onclick="saveChanges('Customer')" style="display: none;" id="saveChangesBtn" class="btn btn-primary">Save</button>
-        <button id="myBtn" class="btn btn-danger" onclick="showRemoveModal()">Remove</button>
-        <br>
-    
-     </div>
-     <br>
-     {{end}}
-         <h1 class="editable" id="name">{{.name}}</h1>
-         {{.description}}
+
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-2 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                              Ticket Number</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">#{{.Ticket.ID}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Earnings (Annual) Card Example -->
+      <div class="col-xl-2 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                              Customer</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{.Ticket.Customer_name.String}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Tasks Card Example -->
+      <div class="col-xl-2 col-md-6 mb-4">
+          <div class="card border-left-info shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Group
+                          </div>
+                          <div class="row no-gutters align-items-center">
+                              <div class="col-auto">
+                                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{.Ticket.Group_name.String}}</div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Pending Requests Card Example -->
+      <div class="col-xl-2 col-md-6 mb-4">
+          <div class="card border-left-warning shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                              Product</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{.Ticket.Product_name.String}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-comments fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="col-xl-2 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Contact</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{.Ticket.Contact_name.String}}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Date Created</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800 formatted-date">{{.Ticket.DateCreated}}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="row">
+
+      <div class="col-lg-2">
+
+          <!-- Default Card Example -->
+
+          <!-- Basic Card Example -->
+          <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Custom Fields</h6>
+              </div>
+              <div class="card-body">
+                {{ $CustomFields := .Ticket.CustomFields }}
+                {{range $cf := $CustomFields }}
+                    {{$cf.Name}}
+                    <div id="custom-field-{{$cf.ID}}" class="dropdown-content">
+                        <input type="text" class="form-control" id="cf-input-{{$cf.ID}}" name="cf-input-{{$cf.ID}}" placeholder="{{$cf.Name}}" onkeyup="filterObjects('{{$cf.ID}}')">
+                        <div id="cf-{{$cf.ID}}PickListOptions" class="list-group" style="display: none;">
+                            {{range $option := $cf.Options}}
+                            <a href="#" class="list-group-item list-group-item-action" data-cf="{{$cf.ID}}" onclick="objectSelected('{{$option.ID}}')" id='cf-option-{{$option.ID}}'>{{$option.Value}}</a>
+                            {{end}}
+                        </div>
+                      </div>
+
+                           
+                  {{end}}
+              </div>
+          </div>
+
+      </div>
+
+      <div class="col-lg-10">
+        {{range .Actions}}
+      <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Action added by <a href="/users/{{.Created_by}}">{{.Created_by_name}}</a> on <div class="action-created-on formatted-date">{{.Date_created}}</div></h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-header"></div>
+                    <a class="dropdown-item" href="#">Edit</a>
+                    <a class="dropdown-item" href="#">Remove</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Email</a>
+                </div>
+            </div>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            {{.Action_text}}
+        </div>
+    </div>
+        {{end}}
+
+
+      </div>
 
   </div>
-  <div class="row">
-    <p>ID: <span id="objectId">{{.ticket_id}}</span></p>
-    <p>Product: <span id="product">{{.product_name}}</span></p>
-    <p>Customer: <span id="customer">{{.customer_name}}</span></p>
-    <p>Contact: <span id="contact">{{.contact_name}}</span></p>
-  </div>
+4
 </div>
 
 
+<!-- Load our React component. -->
 
   <script>
+      
 
 
-    
+
+
+function objectSelected(objectType){
+ticket_id = "{{.Ticket.ID}}";
+  selectedValue = $("#cf-option-"+objectType).html();
+  cfID = $("#cf-option-"+objectType).data("cf");
+  console.log(cfID);
+  $("#cf-input-"+cfID).val(selectedValue);
+  $("#cf-"+cfID+"PickListOptions").css("display", "none");
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type: "TicketCustomValue", ticket_id: ticket_id, field_id: cfID.toString(), option_id: objectType}),
+
+}
+fetch("/update", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+
+          });
+}
+
+function filterObjects(objectType) {
+  var input, filter, ul, li, a, i;
+  input = document.getElementById('cf-input-'+objectType);
+  filter = input.value.toUpperCase();
+
+  if(filter.length>0){
+    $("#cf-"+objectType+"PickListOptions").css("display", "block")
+  div = document.getElementById('cf-'+objectType+"PickListOptions");
+  a = div.getElementsByTagName("a");
+  for (i = 0; i < a.length; i++) {
+    txtValue = a[i].textContent || a[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
+  }
+  }
+  else{
+    $("#customerPickListOptions").css("display", "none")
+
+  }
+}
+
+
+    let actionType = 0;
+document.addEventListener("DOMContentLoaded", function(event) { 
+    getCustomValues();
+ $(".formatted-date").replaceWith(function(){
+    var d = new Date($(this).html());
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"];
+    return monthNames[d.getMonth()] + " "+d.getDay() + ", " + d.getFullYear() +" at " + d.getHours() +":" + d.getMinutes();
+})
+  document.getElementById("add-public-response").addEventListener ("click", function(){
+      $('#trumbowyg-add-action').trumbowyg();
+      $('#add-action-editor').toggle();
+      actionType = 1;
+
+    });
+    document.getElementById("add-note").addEventListener ("click", function(){
+      $('#trumbowyg-add-action').trumbowyg();
+      $('#add-action-editor').toggle();
+      actionType = 0;
+
+    });
+    document.getElementById("save-action-btn").addEventListener ("click", function(){
+      addAction()
+    });
+  
+});
+
+function addAction(){
+
+  description = $('#trumbowyg-add-action').trumbowyg().html();
+  ticket_id = "{{.Ticket.ID}}";
+      const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ticket_id: ticket_id.toString(), description: description.toString(), 
+                           action_type: actionType.toString()}),
+  };
+  console.log(requestOptions.body);
+  fetch("/add_action", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+           $("#ticket-actions").prepend('<div class="card mb-2"> <div class="card-header action-type-'+actionType+'">Action added by {{.userPermissions.Name}} just now</div><div class="card-body">'+description+'</div></div>')
+           $('#trumbowyg-add-action').trumbowyg('empty');
+  $('#add-action-editor').toggle();
+          });
+        }
+function getCustomValues(){
+    ticket_id = "{{.Ticket.ID}}";
+
+    const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+
+}
+fetch("/tickets/"+ticket_id+"/customValues/")
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+            console.log('test');
+
+            for(var i=0; i<json.ActiveValues.length; i++){
+                $("#cf-input-"+json.ActiveValues[i].CustomFieldID).val(json.ActiveValues[i].OptionValue);
+            }
+          });
+}
   </script>
-    {{template "footer" .}}
+    {{template "footer_new" .}}

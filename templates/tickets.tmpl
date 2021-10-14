@@ -1,24 +1,83 @@
-{{template "header" .}}
-
-    <div class="container">
+{{template "header_new" .}}
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" id="my-groups-tickets" href="#">My Groups</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="all-tickets">All Tickets</a>
+        </li>
+      </ul>
     {{if eq .userPermissions.CanCreateContacts "true"}}
-    <br>
-      <div class="margin-md">
-         <a href="tickets/new"><button type="button" class="btn btn-primary">New Ticket</button></a>
-     </div>
-     <br>
 
      {{end}}
-     
+
       <div class="list-group margin-md">
-        {{range $key, $value := .tickets}}
-             <a href="/tickets/{{$key}}" class="list-group-item list-group-item-action">[{{$key}}] {{$value.Name}}</a>
-        {{end}}
+        <div id="ticket-list">
+        <div class="card shadow mb-4">
+          <div class="card-body">
+              <div class="table-responsive" style="overflow-x: hidden;">
+                  <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4"><div class="row"><div class="col-sm-12 col-md-6"></div></div><div class="row"><div class="col-sm-12"><table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%; overflow-x: hidden;">
+                      <thead>
+                          <tr role="row"><th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 5%;">#</th><th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 35%;">Name</th><th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 15%;">Customer</th><th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 15%;">Contact</th><th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 15%;">Product</th><th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending" style="width: 15%;">Group</th></tr>
+                      </thead>
+                      <tbody id="tickets-list">
+                        {{range $key, $value := .tickets}}
+
+                      <tr class="ticket-table-row">
+                              <td class="sorting_1"><a href="/tickets/{{$value.ID}}">{{$value.ID}}</a></td>
+                              <td><a href="/tickets/{{$value.ID}}">{{$value.Name}}</a></td>
+                              <td><a href="/customers/{{$value.Customer_id.String}}">{{$value.Customer_name.String}}</td></a>
+                              <td><a href="/contacts/{{$value.Contact_id.String}}">{{$value.Contact_name.String}}</td></a>
+                              <td><a href="/products/{{$value.Product_id.String}}">{{$value.Product_name.String}}</td></a>
+                              <td><a href="/groups/{{$value.Group_id.String}}">{{$value.Group_name.String}}</td></a>
+                          </tr>
+                          {{end}}
+                        </tbody>
+                  </table></div></div>
+              </div>
+          </div>
+      </div>
+      </div>
     </div>
+<script>
 
+window.addEventListener("DOMContentLoaded", function(event) { 
+  document.getElementById("my-groups-tickets").addEventListener ("click", function(){
+    getTickets("mygroups");
+  });
+  document.getElementById("all-tickets").addEventListener ("click", function(){
+    getTickets("all");
+  });
+});
 
+function getTickets(type){
+  let fetchUrl;
+  $("#tickets-list" ).empty();
+  $("#tickets-list" ).html('<div class="spinner-border" id="loading-tickets-spinner" role="status"><span class="sr-only">Loading...</span></div>');
+  const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  };
+  fetch("/tickets/"+type, requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+          $("#loading-tickets-spinner").remove();
+          console.log(json.tickets);
+          for (const [key, value] of Object.entries(json.tickets)) {
+            console.log(json.tickets[key].ID);
+            $("#tickets-list").append(`<tr class="ticket-table-row">
+                              <td class="sorting_1"><a href="/tickets/"`+json.tickets[key].ID+`">`+json.tickets[key].ID+`</a></td>
+                              <td><a href="/tickets/`+json.tickets[key].ID+`">`+json.tickets[key].Name+`</a></td>
+                              <td><a href="/customers/`+json.tickets[key].Customer_id.String+`">`+json.tickets[key].Customer_name.String+`</td></a>
+                              <td><a href="/contacts/`+json.tickets[key].Contact_id.String+`">`+json.tickets[key].Contact_name.String+`</td></a>
+                              <td><a href="/products/`+json.tickets[key].Product_id.String+`">`+json.tickets[key].Product_name.String+`</td></a>
+                              <td><a href="/groups/`+json.tickets[key].Group_id.String+`">`+json.tickets[key].Group_name.String+`</td></a>
+                          </tr>`);
+          }
+          });
+        
+}
+</script>
+  
 
-
- </div>
-
-    {{template "footer" .}}
+    {{template "footer_new" .}}

@@ -1,0 +1,212 @@
+/* #ticket-actions{
+    width: 95%;
+    margin: auto;
+}
+
+#ticket-details{
+    width: 95%;
+    margin: auto;
+} */
+.permission-true{
+    color: #4e73df;
+    text-shadow: 1px 1px 3px #224abe ;
+    cursor: pointer;
+
+}
+.permission-false{
+    color: #858796;
+    cursor: pointer;
+
+}
+a{
+    color: #5A5C69;
+}
+#new-ticket{
+    color: green;
+}
+.ticket-table-row a{
+    color: #424242;
+}
+.detail-item{
+    margin-bottom: 15px;
+}
+#unauthorized{
+    width: 50%;
+    margin: auto;
+}
+
+.content-section{
+    width: 95%;
+    margin: auto;
+}
+
+.btn-response{
+    background-color: #8BC34A;
+    color: white;
+}
+
+.btn-note{
+    color: white;
+    background-color: #673AB7;
+}
+.action-type-0{
+    color: white;
+    background-color: #673AB7;
+}
+.action-type-1{
+    color: white;
+    background-color: #8BC34A;
+}
+#add-action-editor{
+    display: none;
+}
+#created-by-action{
+    color: white;
+
+}
+
+.btn-outline-secondary {
+    color: aqua;
+    border-color: #6c757d;
+}
+
+#cancel-action-btn{
+    float: left;
+}
+#cancel-action-btn{
+    float: left;
+}
+.paraClass {
+    font-size: 3em;
+}
+
+.secondClass {
+    color: red;
+}
+
+#lastPara {
+    text-decoration: underline;
+}
+.editElemet{
+    border: 1px solid #4287f5;
+    box-shadow: 0 0 2px #4287f5;
+}
+.editElementActive{
+    border-left: 5px solid #4EBBFF;
+    border-top-left-radius: 10px;
+    background-color: #cbe6f2;
+
+}
+  /* The Modal (background) */
+.modal {
+display: none; /* Hidden by default */
+position: fixed; /* Stay in place */
+z-index: 1; /* Sit on top */
+left: 0;
+top: 0;
+width: 100%; /* Full width */
+height: 100%; /* Full height */
+overflow: auto; /* Enable scroll if needed */
+background-color: rgb(0,0,0); /* Fallback color */
+background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+background-color: #fefefe;
+margin: 15% auto; /* 15% from the top and centered */
+padding: 20px;
+border: 1px solid #888;
+width: 50%; /* Could be more or less, depending on screen size */
+}
+.collapse.show {
+visibility: visible;
+}
+/* loading spinner */
+.lds-ring {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+  .lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border: 8px solid #fff;
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: #fff transparent transparent transparent;
+  }
+  .lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+  }
+  .lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+  }
+  .lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+  }
+  @keyframes lds-ring {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+ /* The sidepanel menu */
+.sidepanel {
+    height: 250px; /* Specify a height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: absolute; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 0;
+    left: 0;
+    background-color: #111; /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 60px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidepanel */
+  }
+  
+  /* The sidepanel links */
+  .sidepanel a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+  }
+  
+  /* When you mouse over the navigation links, change their color */
+  .sidepanel a:hover {
+    color: #f1f1f1;
+  }
+  
+  /* Position and style the close button (top right corner) */
+  .sidepanel .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+  }
+  
+  /* Style the button that is used to open the sidepanel */
+  .openbtn {
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #111;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+  }
+  
+  .openbtn:hover {
+    background-color: #444;
+  }

@@ -1,0 +1,39 @@
+{{template "header_new" .}}
+
+
+<div class="container-md">
+
+  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+  <br><br><br>
+
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="groupName" name="groupName" placeholder="Group Name">
+    </div>
+    
+    <div class="d-grid gap-2">
+      <button onclick=newGroup() class="btn btn-primary" value="Create">Create</button>
+    </div>
+
+
+
+
+</div>
+
+<script>
+function newGroup(){
+      const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name:document.getElementById("groupName").value, type:"Group"}),
+    redirect: 'follow'
+  };
+  fetch("/new", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+           console.log(json)
+           window.location.href = "/groups/"+json.Id;
+          });
+        }
+</script>
+
+{{template "footer_new" .}}

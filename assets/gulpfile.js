@@ -1,175 +1,145 @@
-// jshint node:true
-'use strict';
+"use strict";
 
-const gulp = require('gulp'),
-    del = require('del'),
-    vinylPaths = require('vinyl-paths'),
-    $ = require('gulp-load-plugins')();
+// Load plugins
+const autoprefixer = require("gulp-autoprefixer");
+const browsersync = require("browser-sync").create();
+const cleanCSS = require("gulp-clean-css");
+const del = require("del");
+const gulp = require("gulp");
+const header = require("gulp-header");
+const merge = require("merge-stream");
+const plumber = require("gulp-plumber");
+const rename = require("gulp-rename");
+const sass = require("gulp-sass");
+const uglify = require("gulp-uglify");
 
-const paths = {
-    langs: ['src/langs/**.js', '!src/langs/en.js'],
-    icons: ['src/ui/icons/**.svg', 'plugins/*/ui/icons/**.svg'],
-    scripts: ['src/trumbowyg.js'],
-    styles: ['src/ui/sass/trumbowyg.scss'],
-    pluginsScripts: ['plugins/*/**.js'],
-    pluginsStyles: ['plugins/*/ui/sass/**.scss']
-};
-
+// Load package.json for banner
 const pkg = require('./package.json');
-const banner = [
-    '/**',
-    ' * <%= pkg.title %> v<%= pkg.version %> - <%= pkg.description %>',
-    ' * <%= description %>',
-    ' * ------------------------',
-    ' * @link <%= pkg.homepage %>',
-    ' * @license <%= pkg.license %>',
-    ' * @author <%= pkg.author.name %>',
-    ' *         Twitter : @AlexandreDemode',
-    ' *         Website : <%= pkg.author.url.replace("http://", "") %>',
-    ' */',
-    '\n'
-].join('\n');
-const bannerLight = [
-    '/** <%= pkg.title %> v<%= pkg.version %> - <%= pkg.description %>',
-    ' - <%= pkg.homepage.replace("http://", "") %>',
-    ' - License <%= pkg.license %>',
-    ' - Author : <%= pkg.author.name %>',
-    ' / <%= pkg.author.url.replace("http://", "") %>',
-    ' */',
-    '\n'
+
+// Set the banner content
+const banner = ['/*!\n',
+  ' * Start Bootstrap - <%= pkg.title %> v<%= pkg.version %> (<%= pkg.homepage %>)\n',
+  ' * Copyright 2013-' + (new Date()).getFullYear(), ' <%= pkg.author %>\n',
+  ' * Licensed under <%= pkg.license %> (https://github.com/StartBootstrap/<%= pkg.name %>/blob/master/LICENSE)\n',
+  ' */\n',
+  '\n'
 ].join('');
 
+// BrowserSync
+function browserSync(done) {
+  browsersync.init({
+    server: {
+      baseDir: "./"
+    },
+    port: 3000
+  });
+  done();
+}
 
-const clean = function () {
-    return gulp.src('dist/*')
-        .pipe(vinylPaths(del));
-};
+// BrowserSync reload
+function browserSyncReload(done) {
+  browsersync.reload();
+  done();
+}
 
-const testScripts = function () {
-    return gulp.src(paths.scripts)
-        .pipe($.jshint())
-        .pipe($.jshint.reporter('jshint-stylish'));
-};
-const testPluginsScripts = function () {
-    return gulp.src(paths.pluginsScripts)
-        .pipe($.jshint())
-        .pipe($.jshint.reporter('jshint-stylish'));
-};
-const testLangs = function () {
-    return gulp.src(paths.langs)
-        .pipe($.jshint())
-        .pipe($.jshint.reporter('jshint-stylish'));
-};
-const test = gulp.parallel(testScripts, testPluginsScripts, testLangs);
+// Clean vendor
+function clean() {
+  return del(["./vendor/"]);
+}
 
-const scripts = gulp.series(testScripts, function scripts() {
-    return gulp.src(paths.scripts)
-        .pipe($.header(banner, {pkg: pkg, description: 'Trumbowyg core file'}))
-        .pipe($.newer('dist/trumbowyg.js'))
-        .pipe($.concat('trumbowyg.js', {newLine: '\r\n\r\n'}))
-        .pipe(gulp.dest('dist/'))
-        .pipe($.size({title: 'trumbowyg.js'}))
-        .pipe($.rename({suffix: '.min'}))
-        .pipe($.terser())
-        .pipe($.header(bannerLight, {pkg: pkg}))
-        .pipe(gulp.dest('dist/'))
-        .pipe($.size({title: 'trumbowyg.min.js'}));
-});
+// Bring third party dependencies from node_modules into vendor directory
+function modules() {
+  // Bootstrap JS
+  var bootstrapJS = gulp.src('./node_modules/bootstrap/dist/js/*')
+    .pipe(gulp.dest('./vendor/bootstrap/js'));
+  // Bootstrap SCSS
+  var bootstrapSCSS = gulp.src('./node_modules/bootstrap/scss/**/*')
+    .pipe(gulp.dest('./vendor/bootstrap/scss'));
+  // ChartJS
+  var chartJS = gulp.src('./node_modules/chart.js/dist/*.js')
+    .pipe(gulp.dest('./vendor/chart.js'));
+  // dataTables
+  var dataTables = gulp.src([
+      './node_modules/datatables.net/js/*.js',
+      './node_modules/datatables.net-bs4/js/*.js',
+      './node_modules/datatables.net-bs4/css/*.css'
+    ])
+    .pipe(gulp.dest('./vendor/datatables'));
+  // Font Awesome
+  var fontAwesome = gulp.src('./node_modules/@fortawesome/**/*')
+    .pipe(gulp.dest('./vendor'));
+  // jQuery Easing
+  var jqueryEasing = gulp.src('./node_modules/jquery.easing/*.js')
+    .pipe(gulp.dest('./vendor/jquery-easing'));
+  // jQuery
+  var jquery = gulp.src([
+      './node_modules/jquery/dist/*',
+      '!./node_modules/jquery/dist/core.js'
+    ])
+    .pipe(gulp.dest('./vendor/jquery'));
+  return merge(bootstrapJS, bootstrapSCSS, chartJS, dataTables, fontAwesome, jquery, jqueryEasing);
+}
 
-const pluginsScripts = gulp.series(testPluginsScripts, function pluginsScripts() {
-    return gulp.src(paths.pluginsScripts)
-        .pipe(gulp.dest('dist/plugins/'))
-        .pipe($.rename({suffix: '.min'}))
-        .pipe($.terser())
-        .pipe(gulp.dest('dist/plugins/'));
-});
+// CSS task
+function css() {
+  return gulp
+    .src("./scss/**/*.scss")
+    .pipe(plumber())
+    .pipe(sass({
+      outputStyle: "expanded",
+      includePaths: "./node_modules",
+    }))
+    .on("error", sass.logError)
+    .pipe(autoprefixer({
+      cascade: false
+    }))
+    .pipe(header(banner, {
+      pkg: pkg
+    }))
+    .pipe(gulp.dest("./css"))
+    .pipe(rename({
+      suffix: ".min"
+    }))
+    .pipe(cleanCSS())
+    .pipe(gulp.dest("./css"))
+    .pipe(browsersync.stream());
+}
 
-const langs = gulp.series(testLangs, function langs() {
-    return gulp.src(paths.langs)
-        .pipe(gulp.dest('dist/langs/'))
-        .pipe($.rename({suffix: '.min'}))
-        .pipe($.terser({
-            format: {
-                comments: 'all'
-            }
-        }))
-        .pipe(gulp.dest('dist/langs/'));
-});
+// JS task
+function js() {
+  return gulp
+    .src([
+      './js/*.js',
+      '!./js/*.min.js',
+    ])
+    .pipe(uglify())
+    .pipe(header(banner, {
+      pkg: pkg
+    }))
+    .pipe(rename({
+      suffix: '.min'
+    }))
+    .pipe(gulp.dest('./js'))
+    .pipe(browsersync.stream());
+}
 
+// Watch files
+function watchFiles() {
+  gulp.watch("./scss/**/*", css);
+  gulp.watch(["./js/**/*", "!./js/**/*.min.js"], js);
+  gulp.watch("./**/*.html", browserSyncReload);
+}
 
-const icons = function () {
-    return gulp.src(paths.icons)
-        .pipe($.rename({prefix: 'trumbowyg-'}))
-        .pipe($.svgmin())
-        .pipe($.svgstore({inlineSvg: true}))
-        .pipe(gulp.dest('dist/ui/'));
-};
+// Define complex tasks
+const vendor = gulp.series(clean, modules);
+const build = gulp.series(vendor, gulp.parallel(css, js));
+const watch = gulp.series(build, gulp.parallel(watchFiles, browserSync));
 
-
-const styles = function () {
-    return gulp.src(paths.styles)
-        .pipe($.sass())
-        .pipe($.autoprefixer(['last 1 version', '> 1%', 'ff >= 20', 'ie >= 9', 'opera >= 12', 'Android >= 2.2'], {cascade: true}))
-        .pipe($.header(banner, {pkg: pkg, description: 'Default stylesheet for Trumbowyg editor'}))
-        .pipe(gulp.dest('dist/ui/'))
-        .pipe($.size({title: 'trumbowyg.css'}))
-        .pipe($.rename({suffix: '.min'}))
-        .pipe($.minifyCss())
-        .pipe($.header(bannerLight, {pkg: pkg}))
-        .pipe(gulp.dest('dist/ui/'))
-        .pipe($.size({title: 'trumbowyg.min.css'}));
-};
-
-const sassDist = gulp.series(styles, function sassDist() {
-    return gulp.src(paths.styles)
-        .pipe($.header(banner, {pkg: pkg, description: 'Default stylesheet for Trumbowyg editor'}))
-        .pipe(gulp.dest('dist/ui/sass'));
-});
-
-const pluginsStyles = function () {
-    return gulp.src(paths.pluginsStyles)
-        .pipe($.sass())
-        .pipe($.autoprefixer(['last 1 version', '> 1%', 'ff >= 20', 'ie >= 9', 'opera >= 12', 'Android >= 2.2'], {cascade: true}))
-        .pipe($.header(banner, {pkg: pkg, description: 'Trumbowyg plugin stylesheet'}))
-        .pipe($.rename(function (path) {
-            path.dirname += '/..';
-        }))
-        .pipe(gulp.dest('dist/plugins/'))
-        .pipe($.rename({suffix: '.min'}))
-        .pipe($.minifyCss())
-        .pipe($.header(bannerLight, {pkg: pkg}))
-        .pipe(gulp.dest('dist/plugins/'))
-        .pipe($.size({title: 'Plugins styles'}));
-};
-
-const pluginsSassDist = gulp.series(pluginsStyles, function pluginsSassDist() {
-    return gulp.src(paths.pluginsStyles)
-        .pipe($.header(banner, {pkg: pkg, description: 'Default stylesheet for Trumbowyg editor plugin'}))
-        .pipe(gulp.dest('dist/plugins'));
-});
-
-
-const watch = function () {
-    gulp.watch(paths.icons, icons);
-    gulp.watch(paths.scripts, scripts);
-    gulp.watch(paths.langs, langs);
-    gulp.watch(paths.pluginsScripts, pluginsScripts);
-    gulp.watch(paths.pluginsStyles, pluginsStyles);
-    gulp.watch(paths.styles, styles);
-
-    gulp.watch(['dist/**', 'dist/*/**'], function (file) {
-        $.livereload.changed(file);
-    });
-
-    $.livereload.listen();
-};
-
-const build = gulp.series(clean, gulp.parallel(scripts, pluginsScripts, langs, icons, sassDist, pluginsSassDist));
-
-module.exports = {
-    default: gulp.series(build, watch),
-    clean,
-    build,
-    test,
-    watch,
-};
+// Export tasks
+exports.css = css;
+exports.js = js;
+exports.clean = clean;
+exports.vendor = vendor;
+exports.build = build;
+exports.watch = watch;
+exports.default = build;

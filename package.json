@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-select": "^5.0.0",
+    "vue-select": "^3.13.0"
+  }
+}

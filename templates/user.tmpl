@@ -1,40 +1,254 @@
-{{template "header" .}}
-
-<div class="container">
-  <div class="row">
-   {{if eq .userPermissions.CanCreateContacts "true"}}
-<br>
-  <div class="margin-md">
-    <br>
-    <button type="button" onclick="makeEditable()" id="editItemBtn" class="btn btn-primary">Edit</button> 
-    <button type="button" onclick="saveChanges('User')" style="display: none;" id="saveChangesBtn" class="btn btn-primary">Save</button>
-    <button id="myBtn" class="btn btn-danger" onclick="showRemoveModal()">Remove</button>
-    <br>
-
- </div>
- <br>
- {{end}}
-      <div class="col">
-         <h1 class="editable" id="name">{{.user_name}}</h1>
-         <p>Date Created: {{.created_at}}</p>
-         <p>ID: <span id="objectId">{{.user_id}}</span></p>
-         <p>Email: <span class="editable" id="email">{{.email}}</span></p>
+{{template "header_new" .}}
+<div class="row gutters-sm">
+  <div class="col-md-4 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex flex-column align-items-center text-center">
+          <img src="" alt="Admin" class="rounded-circle" id="user-avatar" width="150">
+          <div class="mt-3">
+            <h4>{{.User.Name}}</h4>
+          </div>
+        </div>
       </div>
+    </div>
+    <div class="card mt-3">
+      <ul class="list-group list-group-flush" id="user-groups">
+        <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap" >
+          <div id="myDropdown" class="dropdown-content" style="width: 100%">
+            <input type="text" class="form-control" id="groupName"name="groupName"  placeholder="Add to group..." onkeyup="filterFunction()">
+            <div id="pickListOptions" class="list-group" style="display: none;">
+          </div>
+          </div>
+        </li>
+        <div id="newGroups"></div>
+        {{range $key, $value := .User.Groups}}
+        <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap" id="li-{{.ID}}">
+          <h6 class="mb-0"><a href="groups/{{.ID}}">{{.Name}}</a></h6>
+          <a href="#" onClick="removeFromGroup('{{.ID}}')"><span class="text-secondary"><i class="fas fa-minus-circle"></i></span></a>
+        </li>
+        {{end}}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-sm-3">
+            <h6 class="mb-0">Name</h6>
+          </div>
+          <div class="col-sm-9 text-secondary editable" id="name">
+            {{.User.Name}}
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-sm-3">
+            <h6 class="mb-0" >Email</h6>
+          </div>
+          <div class="col-sm-9 text-secondary editable" id="email">
+            {{.User.Email}}
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-sm-3">
+            <h6 class="mb-0">Date Created</h6>
+          </div>
+          <div class="col-sm-9 text-secondary">
+            {{.User.DateCreated}}
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-sm-3">
+            <h6 class="mb-0">Active</h6>
+          </div>
+          <div class="col-sm-9 text-secondary">
+            {{.User.IsActive}}
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-sm-12">
+            <a class="btn btn-info" href="#" id="editItemBtn" onclick=makeEditable()>Edit</a>
+            <a class="btn btn-info ml-2" href="#"  style="display: none;" id="saveChangesBtn" onclick="saveChanges('User', '{{.User.ID}}')">Save</a>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row gutters-sm">
+      <div class="col-sm-6 mb-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">User Permissions</i></h6>
+            <div class="table-responsive" id="user-permissions">
+              <table class="table card-table m-0">
+                <tbody>
+                  <tr>
+                    <th>Object</th>
+                    <th>Create</th>
+                    <th>Edit</th>
+                  </tr>
+                  <tr>
+                    <td>Users</td>
+                    <td onclick="updatePermissions('Can_create_users', '{{.User.ID}}')"><i id="Can_create_users" class="fas fa-check permission-{{.User.Can_create_users}}"></i></td>
+                    <td onclick="updatePermissions('Can_edit_users', '{{.User.ID}}')"><i id="Can_edit_users" class="fas fa-check permission-{{.User.Can_edit_users}}"></i></td>
+                  </tr>
+                  <tr>
+                    <td>Customers</td>
+                    <td onclick="updatePermissions('Can_create_customers', '{{.User.ID}}')"><i id="Can_create_customers" class="fas fa-check permission-{{.User.Can_create_customers}}"></i></td>
+                    <td onclick="updatePermissions('Can_edit_customers', '{{.User.ID}}')"><i id="Can_edit_customers" class="fas fa-check permission-{{.User.Can_edit_customers}}"></i></td>
+                  </tr>
+                  <tr>
+                    <td>Contacts</td>
+                    <td onclick="updatePermissions('Can_create_contacts', '{{.User.ID}}')"><i id="Can_create_contacts" class="fas fa-check permission-{{.User.Can_create_contacts}}"></i></td>
+                    <td onclick="updatePermissions('Can_edit_contacts', '{{.User.ID}}')"><i id="Can_edit_contacts" class="fas fa-check permission-{{.User.Can_edit_contacts}}"></i></td>
+                  </tr>
+                  <tr>
+                    <td>Products</td>
+                    <td onclick="updatePermissions('Can_create_products', '{{.User.ID}}')"><i id="Can_create_products" class="fas fa-check permission-{{.User.Can_create_products}}"></i></td>
+                    <td onclick="updatePermissions('Can_edit_products', '{{.User.ID}}')"><i id="Can_edit_products" class="fas fa-check permission-{{.User.Can_edit_products}}"></i></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 mb-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
+            <small>Web Design</small>
+            <div class="progress mb-3" style="height: 5px">
+              <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <small>Website Markup</small>
+            <div class="progress mb-3" style="height: 5px">
+              <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <small>One Page</small>
+            <div class="progress mb-3" style="height: 5px">
+              <div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <small>Mobile Template</small>
+            <div class="progress mb-3" style="height: 5px">
+              <div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <small>Backend API</small>
+            <div class="progress mb-3" style="height: 5px">
+              <div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
   </div>
 </div>
+
+
   <div id="myModal" class="modal margin-md">
 
     <!-- Modal content -->
     <div class="modal-content margin-md">
-      <p>Are you sure that you want to remove this contact?></p>
+      <p>Are you sure that you want to remove this user?></p>
       <button type="button" onclick="deleteItem('{{.user_id}}', 'User')" class="btn btn-danger btn-sm">Remove</button>
       <button type="button" id="cancelRemove" class="btn btn-primary btn-sm">Cancel</button> 
 
     </div>
   
   </div>
-  <script>
-    const updatedValues = new Map();
 
+  <script>
+
+document.addEventListener("DOMContentLoaded", function(event) { 
+  const avatarId = '{{.User.ID}}'%10;
+  $("#user-avatar").attr("src", "/assets/avatars/avatar"+avatarId+".png");
+  console.log(avatarId);
+});
+
+
+
+function removeFromGroup(groupID){
+const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({GroupID: groupID.toString()}),
+  };
+  console.log(requestOptions.body);
+  fetch("/delete/usergroup", requestOptions)
+  .then($("#li-"+groupID).remove());
+}
+    let selectedGroups = new Set();
+    const updatedValues = new Map();
+    function getGroupsPickList(){
+  const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+  };
+  fetch("/all/groups", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+          console.log(json);
+          for (const [key, value] of Object.entries(json.groups)) {
+            $("#pickListOptions").append('<a href="#" class="list-group-item list-group-item-action" id=group-'+key+' onClick="groupSelected('+key+')">'+value+'</div>');
+          }
+           
+          });
+        }
+        window.onload = function() {
+          getGroupsPickList();
+};
+function groupSelected(groupId){
+  selectedGroups.add(groupId);
+  let groupName = $("#group-"+groupId).html();
+  addToGroup(groupId);
+  $("#newGroups").prepend(`<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap" id="li-`+groupId+`">
+          <h6 class="mb-0"><a href="groups/`+groupId+`">`+groupName+`</a></h6>
+          <a href="#" onClick="removeFromGroup(`+groupId+`)"><span class="text-secondary"><i class="fas fa-minus-circle"></i></span></a>
+        </li>`);
+  $("#group-"+groupId).remove();
+
+
+}
+function addToGroup(groupID){
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({type: "UserGroup", GroupID: groupID.toString(), UserID: '{{.User.ID}}'}),
+  };
+  console.log(requestOptions.body);
+  fetch("/new", requestOptions)
+  .then($("#li-"+groupID).remove());
+}
+
+function filterFunction() {
+  var input, filter, ul, li, a, i;
+  input = document.getElementById("groupName");
+  filter = input.value.toUpperCase();
+
+  if(filter.length>2){
+    $("#pickListOptions").css("display", "block")
+  div = document.getElementById("pickListOptions");
+  a = div.getElementsByTagName("a");
+  for (i = 0; i < a.length; i++) {
+    txtValue = a[i].textContent || a[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
+  }
+  }
+  else{
+    $("#pickListOptions").css("display", "none")
+  }
+}
   </script>
-    {{template "footer" .}}
+    {{template "footer_new" .}}

@@ -1,4 +1,4 @@
-{{template "header" .}}
+{{template "header_new" .}}
 
 
 <div class="container-md" id="vueRoot">
@@ -8,7 +8,9 @@
 
     <div class="form-floating mb-3">
       <input type="text" class="form-control" id="contactName" v-model="contactName" name="contactName" placeholder="Contact Name">
-      <label for="contactName">Contact Name</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="contactName" v-model="contactName" name="contactName" placeholder="Contact Email">
     </div>
     <div class="form-floating mb-3">
       <div class="dropdown">
@@ -57,7 +59,7 @@ function newCustomer(){
       const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name:document.getElementById("contactName").value, type:"Contact"}),
+    body: JSON.stringify({ name:document.getElementById("contactName").value, email: document.getElementById("contactEmail").value, type:"Contact"}),
     redirect: 'follow'
   };
   fetch("/new", requestOptions)
@@ -114,4 +116,4 @@ function newContact(){
         }
 </script>
 
-{{template "footer" .}}
+{{template "footer_new" .}}

@@ -1,0 +1,57 @@
+{{template "header_new" .}}
+<form id="newFieldForm">
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="fieldName" name="fieldName" placeholder="Field Name">
+    </div>
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="fieldType" name="fieldType" placeholder="Field Type">
+    </div>
+    <div class="form-floating mb-3">
+      <textarea class="form-control" id="customFieldPicklistOptions" rows="4"></textarea>
+    </div>
+
+    <div class="d-grid gap-2">
+      <button class="btn btn-primary" type="submit" value="Sign in">Create</button>
+    </div>
+  </form>
+
+<script>
+  function createField(event) {
+    const fieldName = $("#fieldName").val();
+    const fieldType = $("#fieldType").val();
+    var arrayOfLines = $('#customFieldPicklistOptions').val().split('\n');
+      $.each(arrayOfLines, function(index, item) {
+          console.log('here is line:', item);         
+      });
+      console.log(fieldName);
+    const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: fieldName,
+                            fieldType: fieldType,
+                            type: "customField", customValues:  JSON.stringify(arrayOfLines)})
+  };
+  fetch("/admin/add-custom-field", requestOptions)
+  .then(res => res.json()) // expecting a json response
+        .then(json => {
+          console.log(json)
+          if(json.Status == "ok"){
+          console.log(json.prevPath);
+          if(!json.prevPath)
+          window.location.href = "/";
+          else{
+            window.location.href = json.prevPath;
+
+          }
+        }
+          }).catch(function(error)
+          {
+          });
+  event.preventDefault();
+}
+
+const form = document.getElementById('newFieldForm');
+form.addEventListener('submit', createField);
+</script>
+
+{{template "footer_new" .}}

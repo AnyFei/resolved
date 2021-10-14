@@ -1,4 +1,4 @@
-{{template "header" .}}
+{{template "header_new" .}}
 
 
 <div class="container-md" id="vueRoot">
@@ -8,11 +8,11 @@
 
     <div class="form-floating mb-3">
       <input type="text" class="form-control" id="userName" v-model="userName" name="userName" placeholder="User Name">
-      <label for="userName">User Name</label>
+      <label for="userName"></label>
     </div>
     <div class="form-floating mb-3">
       <input type="email" class="form-control" id="email" v-model="email" name="email" placeholder="Email">
-      <label for="userName">Email</label>
+      <label for="userName"></label>
     </div>
     <div class="d-grid gap-2">
       <button onclick=newUser() class="btn btn-primary" value="Create">Create</button>
@@ -57,4 +57,4 @@ function newUser(){
         }
 </script>
 
-{{template "footer" .}}
+{{template "footer_new" .}}
